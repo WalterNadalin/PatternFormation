@@ -24,7 +24,7 @@ cv(t)+du(t)v(t)
 \end{bmatrix}
 $$
 
-the the forward Euler method to solve numerically this system can be written as
+the forward Euler method to solve numerically this system can be written as
 
 $$
 \frac{\mathbf x_{n+1}-\mathbf x_{n}}{h}=\mathbf{F}(t_n, \mathbf x_n)
