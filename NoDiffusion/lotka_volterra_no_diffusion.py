@@ -8,7 +8,7 @@ style.use('dark_background')
 def fe(f: callable, g: callable, init: list, begin: float, end: float, step: float) -> list:
   '''
   Forward Euler applied to a bidimensional non-linear system of first order
-   ordinary differential equations.
+  ordinary differential equations.
 
   Parameters
   ----------
