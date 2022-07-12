@@ -82,8 +82,8 @@ and then use the forward Euler method as in the example without diffusion:
 
 $$
 \begin{cases}
-\mathbf{u}(t_{j+1}) = (I_k+\alpha h_t A)\mathbf{u}(t_j) + \mathbf f(t_j)\\
-\mathbf{v}(t_{j+1}) = (I_k+\beta h_t A)\mathbf{u}(t_j) + \mathbf g(t_j)
+\mathbf{u}(t_{j+1}) = (I_k+\alpha h_t A)\mathbf{u}(t_j) + h_t\mathbf f(t_j)\\
+\mathbf{v}(t_{j+1}) = (I_k+\beta h_t A)\mathbf{u}(t_j) + h_t\mathbf g(t_j)
 \end{cases}
 $$
 
