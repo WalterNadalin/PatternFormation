@@ -28,6 +28,8 @@ $$
 
 that can be solved using a forward Euler method as before.
 
+We can generalize by definining:
+
 $$
 \mathbf{x}=
 \begin{bmatrix}
