@@ -1,7 +1,7 @@
 from numpy import arange, sqrt, zeros, cos, pi
 from matplotlib.pyplot import show, style, xlabel, ylabel, plot, legend
 from seaborn import heatmap
-from coefficents import compute
+from coefficents import modality, power
 
 style.use('dark_background')
 
@@ -39,6 +39,7 @@ if __name__ == '__main__':
   n = 200
   eps = 0.1
   l = 12
+  T = 300
   f = lambda u, v : u * (1 - u) - v * sqrt(u)
   g = lambda u, v : c * v * sqrt(u) - s * v ** 2
   u_bar = (s - c) / s
@@ -46,13 +47,20 @@ if __name__ == '__main__':
   u_init = [u_bar + eps * cos(2 * pi * l * i / n) for i in range(n + 1)]
   v_init = [v_bar + eps * cos(2 * pi * l * i / n) for i in range(n + 1)]
 
-  t, x, u, v = solve(f, g, D, 1, (u_init, v_init), (0, 20), tau, (0, n * h), h)
+  t, x, u, v = solve(f, g, D, 1, (u_init, v_init), (0, T), tau, (0, n * h), h)
 
+  # Heatmap
   heatmap(u, cmap = 'jet')
   xlabel('Space')
   ylabel('Time')
   show()
 
-  plot(t, compute(u, (8, 9, 10, 11, 12), h,  n * h), label = (8, 9, 10, 11, 12))
+  # Modality coefficents
+  peaks = (8, 9, 10, 11, 12)
+  Ck = modality(u, peaks, h,  n * h)
+  plot(t, Ck, label = peaks)
   legend()
   show()
+
+  # Modality power coefficents
+  print(power(Ck, tau, T))
