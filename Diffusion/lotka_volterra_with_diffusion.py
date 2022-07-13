@@ -1,6 +1,7 @@
-from numpy import arange, sqrt, array, ones, diag, fill_diagonal, identity, zeros, cos, pi, linspace, append
-from matplotlib.pyplot import plot, show, style, legend, xlabel, ylabel, imshow
+from numpy import arange, sqrt, zeros, cos, pi
+from matplotlib.pyplot import show, style, xlabel, ylabel, plot, legend
 from seaborn import heatmap
+from coefficents import compute
 
 style.use('dark_background')
 
@@ -33,11 +34,11 @@ if __name__ == '__main__':
   D = 0.05
   c = 1
   s = 1.2
-  tau = 1e-3
+  tau = 1e-2
   h = 2e-1
   n = 200
   eps = 0.1
-  l = 2
+  l = 12
   f = lambda u, v : u * (1 - u) - v * sqrt(u)
   g = lambda u, v : c * v * sqrt(u) - s * v ** 2
   u_bar = (s - c) / s
@@ -45,9 +46,13 @@ if __name__ == '__main__':
   u_init = [u_bar + eps * cos(2 * pi * l * i / n) for i in range(n + 1)]
   v_init = [v_bar + eps * cos(2 * pi * l * i / n) for i in range(n + 1)]
 
-  t, x, u, v = solve(f, g, D, 1, (u_init, v_init), (0, 300), tau, (0, n * h), h)
+  t, x, u, v = solve(f, g, D, 1, (u_init, v_init), (0, 20), tau, (0, n * h), h)
 
   heatmap(u, cmap = 'jet')
   xlabel('Space')
   ylabel('Time')
+  show()
+
+  plot(t, compute(u, (8, 9, 10, 11, 12), h,  n * h), label = (8, 9, 10, 11, 12))
+  legend()
   show()
