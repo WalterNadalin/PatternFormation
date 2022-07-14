@@ -1,3 +1,5 @@
+# Routine to simulate the system that uses the `simulate` package
+
 from simulation.solver import solve, generate_init
 from simulation.coefficients import modality, power
 from simulation.plotting import heat_map
