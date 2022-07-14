@@ -1,6 +1,6 @@
 from seaborn import heatmap
 from numpy import linspace
-from matplotlib.pyplot import xlabel, ylabel, savefig, close, title
+from matplotlib.pyplot import plot, legend, xlabel, ylabel, savefig, close, title, axhline
 
 def heat_map(name: str, x_range: tuple, y_range: tuple, values: list, *, x_n: int = 10, y_n: int = 10) -> None:
   '''
@@ -30,5 +30,19 @@ def heat_map(name: str, x_range: tuple, y_range: tuple, values: list, *, x_n: in
   ylabel('Space')
   title('Variation of the density through space and time')
 
+  savefig(f'./results/{name}.png')
+  close()
+
+def coefficients_plot(name: str, time: list, values: list, peaks: list) -> None:
+  '''
+  ...
+  '''
+  labels = [f'$k = ${x}' for x in peaks]
+  axhline(y = 0, color = 'black', linestyle = '--')
+  plot(time, values, label = labels)
+  legend()
+  xlabel('Time')
+  ylabel('Coefficents')
+  title('Variation of the modality coefficents in time')
   savefig(f'./results/{name}.png')
   close()
