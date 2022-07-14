@@ -13,7 +13,7 @@ def modality(values: list, peaks: list, spacestep: float, length: float) -> list
   n, m = values.shape
   Ck = [[0 for _ in peaks] for _ in values]
 
-  print('\nComputing the modality coefficents...')
+  print('\Computing the modality coefficents...')
   for i in tqdm(range(n)):
     for k in range(len(peaks)):
       temp = const * peaks[k]
@@ -39,7 +39,7 @@ def power(modality: list, timestep: float, length: float) -> list:
   n, m = modality.shape
   Wk = [0 for _ in range(m)]
 
-  print('\nComputing the power modality coefficents...')
+  print('Computing the power modality coefficents...')
   for j in tqdm(range(m)):
     for i in range(n):
       Wk[j] += modality[i][j] * modality[i][j]
