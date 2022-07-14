@@ -5,8 +5,6 @@ import numpy as np
 import Models as PP
 from seaborn import heatmap
 
-style.use('dark_background')
-
 if __name__ == '__main__':
     c, s = 1, 1.2
     h, tau = 0.2, 0.01
@@ -14,7 +12,8 @@ if __name__ == '__main__':
     DeltaT = [i for i in np.arange(0, T, tau)]  # time instants
     DeltaX = [i for i in np.arange(0, L, h)]  # space points
     PP_system = PP.OtherModel(c, s)
-
+    u_eq = (s - c) / s
+    v_eq = c * np.sqrt(s - c) / np.sqrt(s ** 3)
 
     # SPACE EVOLUTION GRAFICS
     ev_05 = []
@@ -48,12 +47,11 @@ if __name__ == '__main__':
     plt.xlabel("x")
     plt.title("D=0.1")
     plt.legend()
+    plt.savefig("D_01_x.png")
     plt.show()
 
 
     # HEATMAP GRAFICS
-    u_eq = (s - c) / s
-    v_eq = c * np.sqrt(s - c) / np.sqrt(s ** 3)
     eps, lam = 0.1, 2
     u_init = [u_eq + eps * np.cos(2 * np.pi * lam * i * h / L) for i in range(int(L / h))]
     v_init = [v_eq + eps * np.cos(2 * np.pi * lam * i * h / L) for i in range(int(L / h))]
