@@ -1,66 +1,78 @@
-from numpy import arange, sqrt, zeros, cos, pi
-from matplotlib.pyplot import show, style, xlabel, ylabel, plot, legend
+import matplotlib.pyplot as plt
+import utils as u
+from scipy.integrate import odeint
+import numpy as np
+import Models as PP
 from seaborn import heatmap
-from coefficents import modality, power
 
 style.use('dark_background')
 
-def solve(f: callable, g: callable, alpha: float, beta: float, init: list, time: list, step: float, domain: list, h: int) -> list:
-  '''
-  ...
-  '''
-  t, x = arange(time[0], time[1] + step, step), arange(domain[0], domain[1] + h, h)
-  n, k = t.shape[0], x.shape[0]
-  u, v = zeros((n, k)), zeros((n, k))
-  u[0], v[0] = init
-  alpha *= step / (h ** 2)
-  beta *= step / (h ** 2)
-
-  for j in range(n - 1):
-    for i in range(1, k - 1):
-      u[j][i] = 0 if u[j][i] < 0 else u[j][i]
-      v[j][i] = 0 if v[j][i] < 0 else v[j][i]
-      u[j + 1][i] = u[j][i] + step * f(u[j][i], v[j][i])
-      u[j + 1][i] += alpha * (u[j][i - 1] - 2 * u[j][i] + u[j][i + 1])
-      v[j + 1][i] = v[j][i] + step * g(u[j][i], v[j][i])
-      v[j + 1][i] += beta * (v[j][i - 1] - 2 * v[j][i] + v[j][i + 1])
-
-    u[j + 1][0], u[j + 1][-1] = u[j + 1][1], u[j + 1][-2]
-    v[j + 1][0], v[j + 1][-1] = v[j + 1][1], v[j + 1][-2]
-
-  return t, x, u, v
-
 if __name__ == '__main__':
-  D = 0.05
-  c = 1
-  s = 1.2
-  tau = 1e-2
-  h = 2e-1
-  n = 200
-  eps = 0.1
-  l = 12
-  T = 300
-  f = lambda u, v : u * (1 - u) - v * sqrt(u)
-  g = lambda u, v : c * v * sqrt(u) - s * v ** 2
-  u_bar = (s - c) / s
-  v_bar = c * sqrt(s - c) / sqrt(s ** 3)
-  u_init = [u_bar + eps * cos(2 * pi * l * i / n) for i in range(n + 1)]
-  v_init = [v_bar + eps * cos(2 * pi * l * i / n) for i in range(n + 1)]
+    c, s = 1, 1.2
+    h, tau = 0.2, 0.01
+    L, T = 40, 400
+    DeltaT = [i for i in np.arange(0, T, tau)]  # time instants
+    DeltaX = [i for i in np.arange(0, L, h)]  # space points
+    PP_system = PP.OtherModel(c, s)
 
-  t, x, u, v = solve(f, g, D, 1, (u_init, v_init), (0, T), tau, (0, n * h), h)
 
-  # Heatmap
-  heatmap(u, cmap = 'jet')
-  xlabel('Space')
-  ylabel('Time')
-  show()
+    # SPACE EVOLUTION GRAFICS
+    ev_05 = []
+    D = 0.05
+    for eps, lam in [[0.05, 6.5], [0.1, 4.5], [0.05, 12]]:
+        u_init = [u_eq + eps * np.cos(2 * np.pi * lam * i * h / L) for i in range(int(L / h))]
+        v_init = [v_eq + eps * np.cos(2 * np.pi * lam * i * h / L) for i in range(int(L / h))]
+        evolution = u.solve(PP_system, [D, 1], [u_init, v_init], DeltaT, DeltaX)
+        ev_05.append(evolution[-1, :, 0])
 
-  # Modality coefficents
-  peaks = (8, 9, 10, 11, 12)
-  Ck = modality(u, peaks, h,  n * h)
-  plot(t, Ck, label = peaks)
-  legend()
-  show()
+    ev_1 = []
+    D = 0.1
+    for eps, lam in [[0.1, 4], [0.1, 5.5], [0.05, 8]]:
+        u_init = [u_eq + eps * np.cos(2 * np.pi * lam * i * h / L) for i in range(int(L / h))]
+        v_init = [v_eq + eps * np.cos(2 * np.pi * lam * i * h / L) for i in range(int(L / h))]
+        evolution = u.solve(PP_system, [D, 1], [u_init, v_init], DeltaT, DeltaX)
+        ev_1.append(evolution[-1, :, 0])
 
-  # Modality power coefficents
-  print(power(Ck, tau, T))
+    plt.plot(ev_05[0], label="epsilon=0.05, lambda=6.5", color="blue")
+    plt.plot(ev_05[1], label="epsilon=0.1, lambda=4.5", color="red", linestyle="--")
+    plt.plot(ev_05[2], label="epsilon=0.05, lambda=12", color="green", linestyle="--")
+    plt.xlabel("x")
+    plt.title("D=0.05")
+    plt.legend()
+    plt.show()
+    #plt.savefig("D_005_x.png")
+
+    plt.plot(ev_1[0], label="epsilon=0.1, lambda=4", color="blue")
+    plt.plot(ev_1[1], label="epsilon=0.1, lambda=5.5", color="red", linestyle="--")
+    plt.plot(ev_1[2], label="epsilon=0.05, lambda=8", color="green", linestyle="--")
+    plt.xlabel("x")
+    plt.title("D=0.1")
+    plt.legend()
+    plt.show()
+
+
+    # HEATMAP GRAFICS
+    u_eq = (s - c) / s
+    v_eq = c * np.sqrt(s - c) / np.sqrt(s ** 3)
+    eps, lam = 0.1, 2
+    u_init = [u_eq + eps * np.cos(2 * np.pi * lam * i * h / L) for i in range(int(L / h))]
+    v_init = [v_eq + eps * np.cos(2 * np.pi * lam * i * h / L) for i in range(int(L / h))]
+    D = 0.05
+    evolution = u.solve(PP_system, [D, 1], [u_init, v_init], DeltaT, DeltaX)
+
+    heatmap(evolution[:, :, 0], cmap='jet')
+    plt.xlabel('Space')
+    plt.ylabel('Time')
+    plt.show()
+
+    # MODALITY COEFFICIENTS
+    peaks = (8, 9, 10, 11, 12)
+    Ck = u.modality(evolution[:, :, 0], peaks, h, L)
+    plt.plot(DeltaT, Ck, label=peaks)
+    plt.legend()
+    plt.show()
+
+    # MODALITY POWER COEFFICIENTS
+    print(u.power(Ck, tau, T))
+
+
