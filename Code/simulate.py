@@ -1,31 +1,31 @@
 # Routine to simulate the system that uses the `simulate` package
 
-from simulation.solver import solve, generate_init
-from simulation.coefficients import modality, power
+import simulation.utils as u
+import numpy as np
+import simulation.Models as PP
 from simulation.plotting import heat_map, coefficients_plot
-from matplotlib.pyplot import show, style, xlabel, ylabel, plot, legend, savefig, close
-from numpy import sqrt, linspace, floor
-
-style.use('default')
+from simulation.coefficients import modality, power
 
 c, s = 1, 1.2
-h, n = 2e-1, 200
-eps, l = 0.1, 10
+h, L = 2e-1, 200
 tau, T = 1e-2, 10
-f = lambda u, v : u * (1 - u) - v * sqrt(u)
-g = lambda u, v : c * v * sqrt(u) - s * v ** 2
-init = generate_init(eps, l, n, c = c, s = s)
+DeltaT = [i for i in np.arange(0, T, tau)]  # time instants
+DeltaX = [i for i in np.arange(0, L, h)]  # space points
+PP_system = PP.OtherModel(c, s)
 
-t, x, u, v = solve(f, g, init, (0, T), (0, n * h), step = tau, h = h)
-
+eps, lam, gamma = 0.1, 10, 0.02
+D = 0.05
+u_init, v_init = PP_system.initial_conditions(eps, lam, L, h)
+ev = u.solve_with_diffusion(PP_system, [D, 1], [u_init, v_init], DeltaT, DeltaX,
+                           gamma=[gamma, gamma], STOCHASTICITY=True)
 # Heatmap
-heat_map('gigi', (0, n * h), (0, T), u)
+heat_map('gigi', (0, L * h), (0, T), ev[:, :, 0])
 
 # Modality coefficents
 peaks = (9, 9.5, 10, 10.5, 11, 11.5, 12)
-Ck = modality(u, peaks, h,  n * h)
+Ck = modality(ev[:, :, 0], peaks, h,  L * h)
 
-coefficients_plot('gino', t, Ck, peaks)
+coefficients_plot('gino', DeltaT, Ck, peaks)
 
 # Modality power coefficents
 print(power(Ck, tau, T))

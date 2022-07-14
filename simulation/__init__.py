@@ -1,4 +1,4 @@
-__all__ = ['solver', 'analysis', 'coefficents', 'plotting']
+__all__ = ['solver', 'analysis', 'coefficients', 'plotting']
 
 from .solver import solve, generate_init
 from .analysis import confidence_interval

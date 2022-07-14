@@ -1,8 +1,7 @@
 import matplotlib.pyplot as plt
-import utils as u
-from scipy.integrate import odeint
+import simulation.utils as u
 import numpy as np
-import Models as PP
+import simulation.Models as PP
 from seaborn import heatmap
 
 if __name__ == '__main__':
@@ -12,24 +11,20 @@ if __name__ == '__main__':
     DeltaT = [i for i in np.arange(0, T, tau)]  # time instants
     DeltaX = [i for i in np.arange(0, L, h)]  # space points
     PP_system = PP.OtherModel(c, s)
-    u_eq = (s - c) / s
-    v_eq = c * np.sqrt(s - c) / np.sqrt(s ** 3)
 
     # SPACE EVOLUTION GRAFICS
     ev_05 = []
     D = 0.05
     for eps, lam in [[0.05, 6.5], [0.1, 4.5], [0.05, 12]]:
-        u_init = [u_eq + eps * np.cos(2 * np.pi * lam * i * h / L) for i in range(int(L / h))]
-        v_init = [v_eq + eps * np.cos(2 * np.pi * lam * i * h / L) for i in range(int(L / h))]
-        evolution = u.solve(PP_system, [D, 1], [u_init, v_init], DeltaT, DeltaX)
+        u_init, v_init = PP_system.initial_conditions(eps, lam, L)
+        evolution = u.solve_with_diffusion(PP_system, [D, 1], [u_init, v_init], DeltaT, DeltaX)
         ev_05.append(evolution[-1, :, 0])
 
     ev_1 = []
     D = 0.1
     for eps, lam in [[0.1, 4], [0.1, 5.5], [0.05, 8]]:
-        u_init = [u_eq + eps * np.cos(2 * np.pi * lam * i * h / L) for i in range(int(L / h))]
-        v_init = [v_eq + eps * np.cos(2 * np.pi * lam * i * h / L) for i in range(int(L / h))]
-        evolution = u.solve(PP_system, [D, 1], [u_init, v_init], DeltaT, DeltaX)
+        u_init, v_init = PP_system.initial_conditions(eps, lam, L)
+        evolution = u.solve_with_diffusion(PP_system, [D, 1], [u_init, v_init], DeltaT, DeltaX)
         ev_1.append(evolution[-1, :, 0])
 
     plt.plot(ev_05[0], label="epsilon=0.05, lambda=6.5", color="blue")
@@ -53,10 +48,9 @@ if __name__ == '__main__':
 
     # HEATMAP GRAFICS
     eps, lam = 0.1, 2
-    u_init = [u_eq + eps * np.cos(2 * np.pi * lam * i * h / L) for i in range(int(L / h))]
-    v_init = [v_eq + eps * np.cos(2 * np.pi * lam * i * h / L) for i in range(int(L / h))]
+    u_init, v_init = PP_system.initial_conditions(eps, lam, L, h)
     D = 0.05
-    evolution = u.solve(PP_system, [D, 1], [u_init, v_init], DeltaT, DeltaX)
+    evolution = u.solve_with_diffusion(PP_system, [D, 1], [u_init, v_init], DeltaT, DeltaX)
 
     heatmap(evolution[:, :, 0], cmap='jet')
     plt.xlabel('Space')
