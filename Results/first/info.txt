@@ -1,0 +1,11 @@
+# Initialization
+c, s = 1, 1.2
+h, n = 2e-1, 200
+eps, l = 0.1, 5
+tau, T = 1e-2, 500
+f = lambda u, v : u * (1 - u) - v * sqrt(u)
+g = lambda u, v : c * v * sqrt(u) - s * v ** 2
+init = generate_init(eps, l, n, c = c, s = s, uniform = True)
+
+# Solving the equations
+t, x, u, v = solve(f, g, init, (0, T), (0, n * h), Du = 0.13, step = tau, h = h, gamma = 0.02)
