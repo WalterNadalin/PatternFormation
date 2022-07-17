@@ -49,13 +49,13 @@ def solve(fu: callable, fv: callable, init: list, time: tuple, domain: tuple, *,
   return t, x, array(u), array(v)
 
 def generate_init(eps: float, l: float, n: int, *, \
-                  c: float = 1, s: float = 1.2, uniform: bool = False) -> tuple:
+                  a: float = 1, b: float = 1.2, uniform: bool = False) -> tuple:
   '''
   Generates the spatial initial conditions.
   ...
   '''
-  u_bar = (s - c) / s
-  v_bar = c * sqrt(s - c) / sqrt(s ** 3)
+  u_bar = a
+  v_bar = b / a
 
   if uniform:
     return ([u_bar for _ in range(n + 1)], [v_bar for _ in range(n + 1)])
