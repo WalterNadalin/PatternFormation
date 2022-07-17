@@ -6,29 +6,31 @@ from simulation.analysis import confidence_intervals
 from numpy import sqrt, zeros
 
 # Initialization
-c, s = 1, 1.2
+a, b = 3, 9
+Du, Dv = 2, 10
 h, n = 2e-1, 200
-eps, l = 0.1, 5
-tau, T = 1e-2, 500
-f = lambda u, v : u * (1 - u) - v * sqrt(u)
-g = lambda u, v : c * v * sqrt(u) - s * v ** 2
-init = generate_init(eps, l, n, c = c, s = s, uniform = True)
+eps, l = 2, 3
+tau, T = 1e-4, 5
+f = lambda u, v : a - (b + 1) * u + u ** 2 * v
+g = lambda u, v : b * u - u ** 2 * v
+init = generate_init(eps, l, n, a = a, b = b, uniform = False)
 
 # Solving the equations
-t, x, u, v = solve(f, g, init, (0, T), (0, n * h), Du = 0.13, step = tau, h = h, gamma = 0.02)
+t, x, u, v = solve(f, g, init, (0, T), (0, n * h), Du = Du, Dv = Dv, step = tau, h = h, gamma = 0.02, stochasticity = False)
 
 # Heatmap
-heat_map('heat_map', (0, n * h), (0, T), u)
+heat_map('heat_map', (0, T), (0, n * h), u, x_n = 5, y_n = 3)
 
 # Modality coefficents
-peaks = (4, 4.5, 5, 5.5, 6)
+peaks = (3, 3.5, 4, 4.5, 5)
 Ck = modality(u, peaks, h, n * h)
 
 # Coefficents plot
 coefficients_plot('modality_coefficents', t, Ck, peaks)
 
+'''
 # Modality power coefficents
-simulations = 60
+simulations = 100
 
 gammas = [0.00, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08]
 n_peaks, n_gammas = len(peaks), len(gammas)
@@ -47,3 +49,4 @@ for j in range(n_gammas):
 
 # Power plot
 confidence_plot('average_power', CIs, peaks, gammas)
+'''
